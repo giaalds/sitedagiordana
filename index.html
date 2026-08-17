@@ -3,137 +3,369 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiz: Quem é seu Parente Divino?</title>
-    
-    <!-- Todo o CSS fica aqui dentro -->
+    <title>Quiz do Acampamento Meio-Sangue: 22 Chalés</title>
     <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f4ece1; /* Cor de pergaminho antigo */
-            color: #333;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4ece1;
+            color: #2c3e50;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
+            min-height: 100vh;
+            padding: 20px;
         }
 
         .container {
-            background-color: white;
+            background-color: #ffffff;
             padding: 30px;
             border-radius: 15px;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
             text-align: center;
-            max-width: 500px;
-            width: 90%;
-            border-top: 5px solid #e67e22; /* Laranja do Acampamento */
+            max-width: 700px;
+            width: 100%;
+            border-top: 8px solid #e67e22;
         }
 
         h1 {
-            color: #e67e22;
+            color: #d35400;
+            margin-bottom: 8px;
+            font-size: 1.8rem;
+        }
+
+        .progresso {
+            font-size: 0.95rem;
+            color: #7f8c8d;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .pergunta-texto {
+            font-size: 1.25rem;
+            font-weight: bold;
+            margin-bottom: 25px;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #34495e;
+        }
+
+        .opcoes-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
         }
 
         button {
-            background-color: #e67e22;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            margin: 10px;
-            border-radius: 5px;
+            background-color: #fdfbf7;
+            color: #2c3e50;
+            border: 2px solid #e67e22;
+            padding: 14px 18px;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 16px;
-            width: 100%;
-            transition: background 0.3s;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            text-align: left;
+            line-height: 1.4;
         }
 
         button:hover {
-            background-color: #d35400;
+            background-color: #e67e22;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(230, 126, 34, 0.3);
         }
 
-        #opcoes {
-            display: flex;
-            flex-direction: column;
+        .btn-reiniciar {
+            text-align: center;
+            background-color: #d35400;
+            color: white;
+            margin-top: 25px;
+            width: 100%;
+            border: none;
+        }
+
+        .btn-reiniciar:hover {
+            background-color: #a04000;
         }
 
         .escondido {
             display: none;
         }
+
+        #resultado-deus {
+            font-size: 2.2rem;
+            color: #d35400;
+            margin: 15px 0;
+        }
+
+        #resultado-texto {
+            font-size: 1.15rem;
+            line-height: 1.6;
+            background-color: #fdfbf7;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 5px solid #e67e22;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Qual é o seu Parente Divino? 🔱🦉🏹🐗</h1>
+        <h1>🏛️ Quiz do Acampamento Meio-Sangue 🔱</h1>
         
         <div id="quiz-box">
-            <h2 id="pergunta">Carregando pergunta...</h2>
-            <div id="opcoes">
-                <!-- Os botões vão aparecer aqui via JavaScript -->
-            </div>
+            <div class="progresso" id="progresso">Pergunta 1 de 20</div>
+            <div class="pergunta-texto" id="pergunta">Carregando pergunta...</div>
+            <div class="opcoes-grid" id="opcoes"></div>
         </div>
 
         <div id="resultado-box" class="escondido">
-            <h2>Seu pai/mãe divino é:</h2>
+            <h2>O Oráculo de Delfos declarou! Seu chalé é:</h2>
             <h1 id="resultado-deus"></h1>
             <p id="resultado-texto"></p>
-            <button onclick="reiniciar()">Tentar Novamente</button>
+            <button class="btn-reiniciar" onclick="reiniciar()">Refazer o Quiz</button>
         </div>
     </div>
 
-    <!-- Todo o JavaScript fica aqui dentro -->
     <script>
-        // O placar de cada deus
-        let pontos = {
-            Poseidon: 0,
-            Atena: 0,
-            Ares: 0,
-            Apolo: 0
+        let pontos = {};
+
+        const deusesInfo = {
+            "Zeus": "Chalé 1 (Zeus): Feito de mármore branco com grandes colunas, portas de bronze e estátuas de águias. É limpo, silencioso e imponente. Você é um líder nato, orgulhoso e no controle dos céus.",
+            "Hera": "Chalé 2 (Hera): Um chalé elegante de mármore com colunas esculpidas com pavões. Fica sempre vazio, mas você recebeu uma bênção de honra da Rainha dos Deuses pela sua nobreza e postura.",
+            "Poseidon": "Chalé 3 (Poseidon): Construído com rochas marinhas, conchas e coral. O ar cheira a mar e o interior tem uma fonte de água salgada. É o chalé de Percy Jackson!",
+            "Deméter": "Chalé 4 (Deméter): Coberto de flores, plantas trepadeiras e grama no teto. Você tem forte ligação com a natureza e o cultivo.",
+            "Ares": "Chalé 5 (Ares): Pintado de vermelho vivo, com arame farpado no teto e uma cabeça de javali empalhada na porta. É barulhento, impulsivo e focado em combate.",
+            "Atena": "Chalé 6 (Atena): Mármore cinza decorado com corujas, funcionando como laboratório e biblioteca. É o chalé de Annabeth Chase!",
+            "Apolo": "Chalé 7 (Apolo): Feito de ouro maciço que brilha sob a luz do sol. Seus moradores são arqueiros, músicos e curandeiros talentosos.",
+            "Ártemis": "Chalé 8 (Ártemis): Brilha com uma suave luz prateada à noite. Pertence às Caçadoras de Ártemis, refletindo seu espírito livre, independente e protetor.",
+            "Hefesto": "Chalé 9 (Hefesto): Feito de tijolos pretos e chaminés que soltam fumaça. Tem uma oficina subterrânea cheia de engrenagens, ferramentas e invenções.",
+            "Afrodite": "Chalé 10 (Afrodite): Teto de gesso, paredes rosa-choque e cheiro de perfumes caros. Seus moradores se destacam pelo charme, empatia e capacidade de atração.",
+            "Hermes": "Chalé 11 (Hermes): O chalé mais antigo e acolhedor. Aceita todos os viajantes, negociadores e semideuses espertos.",
+            "Dionísio": "Chalé 12 (Dionísio): Decorado com videiras e uvas frescas. Seus moradores são festeiros, descontraídos e especialistas em cultivar a alegria.",
+            "Hades": "Chalé 13 (Hades): Mármore negro e obsidianas com tochas de fogo grego verde. É o chalé de Nico di Angelo! Misterioso, focado e mestre das sombras.",
+            "Íris": "Chalé 14 (Íris): Parede multicolorida que muda de cor com a luz. Seus moradores são criativos, otimistas e cheios de vida.",
+            "Hipnos": "Chalé 15 (Hipnos): Cabana de madeira com música de ninar suave e cheiro de flores de papoula. Tranquilo, relaxado e com grande intuição.",
+            "Nêmesis": "Chalé 16 (Nêmesis): Focado em justiça, vingança e equilíbrio. Seus moradores não aceitam injustiças e sempre cobram a conta dos arrogantes.",
+            "Nike": "Chalé 17 (Nike): Dedicado à deusa da vitória. Seus filhos são extremamente competitivos, odeiam perder e buscam a vitória em tudo.",
+            "Hebe": "Chalé 18 (Hebe): Valoriza o vigor e o espírito jovem. Seus moradores espalham energia positiva e mantêm a vitalidade do acampamento.",
+            "Tique": "Chalé 19 (Tique): Parece um cassino em miniatura! Seus moradores adoram correr riscos, testar a sorte e jogar com o destino.",
+            "Hécate": "Chalé 20 (Hécate): Blocos de pedra mágica que brilham no escuro. Místicos, praticantes de feitiçaria e manipuladores da Névoa.",
+            "Belona": "Chalé 21 (Belona): Homenagem aos laços romanos. Focado em disciplina militar, união, tática de guerra e proteção mútua.",
+            "Ênio": "Chalé 22 (Ênio): Dedicado à deusa do horror e do caos na guerra. Seus moradores são caóticos, imprevisíveis e imparáveis na batalha."
         };
 
-        // As perguntas e as opções que dão pontos para cada deus
         const perguntas = [
             {
-                texto: "Qual é o seu lugar favorito?",
+                texto: "1. Qual ambiente você escolheria para recarregar as energias?",
                 opcoes: [
-                    { texto: "A praia, sentindo a brisa do mar.", deus: "Poseidon" },
-                    { texto: "A biblioteca, lendo um bom livro.", deus: "Atena" },
-                    { texto: "A academia ou um campo de batalha.", deus: "Ares" },
-                    { texto: "Um palco ou ao ar livre no sol.", deus: "Apolo" }
+                    { texto: "Uma praia aberta sentindo a brisa do oceano.", deus: "Poseidon" },
+                    { texto: "Uma biblioteca moderna cheia de projetos e mapas.", deus: "Atena" },
+                    { texto: "Uma oficina cheia de engrenagens e ferramentas.", deus: "Hefesto" },
+                    { texto: "Um quarto confortável com pouca luz e silêncio total.", deus: "Hipnos" }
                 ]
             },
             {
-                texto: "Qual seria sua arma de escolha?",
+                texto: "2. Como você lida com uma disputa ou injustiça?",
                 opcoes: [
-                    { texto: "Arco e Flecha", deus: "Apolo" },
-                    { texto: "Espada de Bronze Celestial", deus: "Ares" },
-                    { texto: "Um Tridente", deus: "Poseidon" },
-                    { texto: "Adaga e uma boa estratégia", deus: "Atena" }
+                    { texto: "Garantindo que o culpado pague e o equilíbrio seja feito.", deus: "Nêmesis" },
+                    { texto: "Partindo direto para o confronto físico para resolver rápido.", deus: "Ares" },
+                    { texto: "Usando inteligência tática militar e disciplina.", deus: "Belona" },
+                    { texto: "Usando lábia e negociação para sair por cima.", deus: "Hermes" }
                 ]
             },
             {
-                texto: "Como seus amigos te descrevem?",
+                texto: "3. Qual destas atividades você mais gosta?",
                 opcoes: [
-                    { texto: "Inteligente e calculista", deus: "Atena" },
-                    { texto: "Artístico e animado", deus: "Apolo" },
-                    { texto: "Forte e protetor", deus: "Ares" },
-                    { texto: "Calmo, mas imprevisível", deus: "Poseidon" }
+                    { texto: "Tocar instrumentos, cantar ou praticar tiro com arco.", deus: "Apolo" },
+                    { texto: "Praticar feitiçaria ou estudar coisas ocultas.", deus: "Hécate" },
+                    { texto: "Jogar jogos de azar, moedas ou dados.", deus: "Tique" },
+                    { texto: "Cuidar de jardins e cultivar plantas.", deus: "Deméter" }
+                ]
+            },
+            {
+                texto: "4. Qual é o seu maior objetivo numa competição?",
+                opcoes: [
+                    { texto: "Vencer a qualquer custo, em primeiro lugar sempre!", deus: "Nike" },
+                    { texto: "Causar um caos total e assustar meus adversários.", deus: "Ênio" },
+                    { texto: "Comandar o grupo e demonstrar minha autoridade.", deus: "Zeus" },
+                    { texto: "Divertir todo mundo com uma boa festa depois do jogo.", deus: "Dionísio" }
+                ]
+            },
+            {
+                texto: "5. Qual objeto mágico você gostaria de possuir?",
+                opcoes: [
+                    { texto: "Uma espada de ferro estígio que absorve a luz.", deus: "Hades" },
+                    { texto: "Um arco prateado que brilha no escuro.", deus: "Ártemis" },
+                    { texto: "Um artefato colorido capaz de mandar mensagens holográficas.", deus: "Íris" },
+                    { texto: "Uma poção capaz de manter a juventude e o vigor eterno.", deus: "Hebe" }
+                ]
+            },
+            {
+                texto: "6. Como seus amigos descrevem sua estética/estilo?",
+                opcoes: [
+                    { texto: "Elegante, impeccável e sempre perfumado(a).", deus: "Afrodite" },
+                    { texto: "Nobre, imponente e majestoso(a).", deus: "Hera" },
+                    { texto: "Roupas confortáveis, estilo moderno e prático.", deus: "Hermes" },
+                    { texto: "Estilo místico, alternativo ou em tons escuros.", deus: "Hécate" }
+                ]
+            },
+            {
+                texto: "7. Em um trabalho de grupo, qual é seu papel natural?",
+                opcoes: [
+                    { texto: "O estrategista que planeja cada detalhe.", deus: "Atena" },
+                    { texto: "O líder que assume o comando e toma as decisões finais.", deus: "Zeus" },
+                    { texto: "O executor que coloca a mão na massa e constrói a ideia.", deus: "Hefesto" },
+                    { texto: "O diplomata que unifica todos os participantes.", deus: "Belona" }
+                ]
+            },
+            {
+                texto: "8. Qual elemento natural traz mais conexão com você?",
+                opcoes: [
+                    { texto: "Tempestades, raios e o ar do céu.", deus: "Zeus" },
+                    { texto: "O mar profundo e seus tremores.", deus: "Poseidon" },
+                    { texto: "A terra fértil, flores e florestas.", deus: "Deméter" },
+                    { texto: "Sombras, minerais e o solo negro.", deus: "Hades" }
+                ]
+            },
+            {
+                texto: "9. Se alguém te provoca, qual sua reação imediata?",
+                opcoes: [
+                    { texto: "Parto para cima com raiva e barulho.", deus: "Ares" },
+                    { texto: "Planejo uma vingança perfeita para pagar na mesma moeda.", deus: "Nêmesis" },
+                    { texto: "Uso de ironia e deboche sem me estressar.", deus: "Dionísio" },
+                    { texto: "Apenas ignoro, minha paz e meu descanso valem mais.", deus: "Hipnos" }
+                ]
+            },
+            {
+                texto: "10. Qual destas qualidades é mais marcante em você?",
+                opcoes: [
+                    { texto: "Uma sorte incrível em situações improváveis.", deus: "Tique" },
+                    { texto: "Espírito livre, independente e amante da natureza selvagem.", deus: "Ártemis" },
+                    { texto: "Sempre jovem de espírito, animado e otimista.", deus: "Hebe" },
+                    { texto: "Talento natural para artes, medicina ou música.", deus: "Apolo" }
+                ]
+            },
+            {
+                texto: "11. Qual é a sua visão sobre guerras e confrontos?",
+                opcoes: [
+                    { texto: "O momento ideal para demonstrar coragem e força bruta.", deus: "Ares" },
+                    { texto: "Deve ser conduzida com disciplina militar, trabalho em equipe e tática.", deus: "Belona" },
+                    { texto: "Guerra é destruição pura, pânico e caos total!", deus: "Ênio" },
+                    { texto: "Prefiro evitar, mas se entrar, é só para ganhar!", deus: "Nike" }
+                ]
+            },
+            {
+                texto: "12. Qual tipo de decoração você prefere no seu quarto?",
+                opcoes: [
+                    { texto: "Paredes rosas, espelhos grandes e travesseiros macios.", deus: "Afrodite" },
+                    { texto: "Luzes coloridas, arco-íris e quadros expressivos.", deus: "Íris" },
+                    { texto: "Mármore nobre, colunas decoradas e simetria perfeita.", deus: "Hera" },
+                    { texto: "Tijolos escuros, ferramentas penduradas e invenções.", deus: "Hefesto" }
+                ]
+            },
+            {
+                texto: "13. Como você reage ao fracasso?",
+                opcoes: [
+                    { texto: "Não aceito! Treino o dobro até alcançar a vitória absoluta.", deus: "Nike" },
+                    { texto: "Analiso o erro logicamente e refaço a estratégia.", deus: "Atena" },
+                    { texto: "Dou de ombros, confio que a sorte muda no próximo jogo.", deus: "Tique" },
+                    { texto: "Uso a criatividade para transformar o erro em arte.", deus: "Apolo" }
+                ]
+            },
+            {
+                texto: "14. Qual seu lugar favorito no Acampamento?",
+                opcoes: [
+                    { texto: "As plantações de morango e os campos.", deus: "Deméter" },
+                    { texto: "O lago de canoagem e a parede de escalada com lava.", deus: "Poseidon" },
+                    { texto: "A fogueira central cantando e fazendo piadas.", deus: "Hermes" },
+                    { texto: "O bosque fechado na penumbra.", deus: "Hades" }
+                ]
+            },
+            {
+                texto: "15. O que torna uma pessoa verdadeiramente admirável para você?",
+                opcoes: [
+                    { texto: "A capacidade de manter a justiça e punir os arrogantes.", deus: "Nêmesis" },
+                    { texto: "Sua beleza, empatia e poder de atração.", deus: "Afrodite" },
+                    { texto: "Sua determinação, liderança e presença forte.", deus: "Zeus" },
+                    { texto: "Sua autonomia, coragem e independência de todos.", deus: "Ártemis" }
+                ]
+            },
+            {
+                texto: "16. Se você pudesse ter um dom mágico especial, qual escolheria?",
+                opcoes: [
+                    { texto: "Controlar a Névoa para criar ilusões e magia.", deus: "Hécate" },
+                    { texto: "Induzir o sono e controlar os sonhos das pessoas.", deus: "Hipnos" },
+                    { texto: "Manipular a água e falar com criaturas marinhas.", deus: "Poseidon" },
+                    { texto: "Criar plantas, frutas e flores instantaneamente.", deus: "Dionísio" }
+                ]
+            },
+            {
+                texto: "17. Qual superpoder secundário te atrai mais?",
+                opcoes: [
+                    { texto: "Vigor físico inagotável e vitalidade.", deus: "Hebe" },
+                    { texto: "Poder de cura rápido para ferimentos.", deus: "Apolo" },
+                    { texto: "Supervelocidade e agilidade em viagens.", deus: "Hermes" },
+                    { texto: "Visão colorida e habilidade de criar luzes refletoras.", deus: "Íris" }
+                ]
+            },
+            {
+                texto: "18. Qual das opções descreve melhor seu espírito em combate?",
+                opcoes: [
+                    { texto: "Agressivo, barulhento e focado na força.", deus: "Ares" },
+                    { texto: "Impiedoso, destruidor e aterrorizante.", deus: "Ênio" },
+                    { texto: "Organizado, leal aos aliados e estratégico.", deus: "Belona" },
+                    { texto: "Misterioso, atacando direto das sombras.", deus: "Hades" }
+                ]
+            },
+            {
+                texto: "19. Qual tipo de ambiente te deixa estressado?",
+                opcoes: [
+                    { texto: "Locais bagunçados, sem etiqueta ou desrespeitosos.", deus: "Hera" },
+                    { texto: "Lugares sem tecnologia, ferramentas ou projeto prático.", deus: "Hefesto" },
+                    { texto: "Pessoas chatas e sem senso de diversão/festa.", deus: "Dionísio" },
+                    { texto: "Locais sem competição ou sem desafio para vencer.", deus: "Nike" }
+                ]
+            },
+            {
+                texto: "20. No final das contas, como você gostaria de ser lembrado?",
+                opcoes: [
+                    { texto: "Como alguém sábio, inteligente e estrategista invencível.", deus: "Atena" },
+                    { texto: "Como alguém carismático, cheio de amigos e acolhedor.", deus: "Hermes" },
+                    { texto: "Como alguém místico que dominou segredos antigos.", deus: "Hécate" },
+                    { texto: "Como alguém extremamente leal, forte e destemido.", deus: "Poseidon" }
                 ]
             }
         ];
 
         let perguntaAtual = 0;
 
+        function zerarPontos() {
+            pontos = {
+                Zeus: 0, Hera: 0, Poseidon: 0, Deméter: 0, Ares: 0, Atena: 0,
+                Apolo: 0, Ártemis: 0, Hefesto: 0, Afrodite: 0, Hermes: 0, Dionísio: 0,
+                Hades: 0, Íris: 0, Hipnos: 0, Nêmesis: 0, Nike: 0, Hebe: 0,
+                Tique: 0, Hécate: 0, Belona: 0, Ênio: 0
+            };
+        }
+
         function mostrarPergunta() {
+            document.getElementById("progresso").innerText = `Pergunta ${perguntaAtual + 1} de ${perguntas.length}`;
             const elementoPergunta = document.getElementById("pergunta");
             const divOpcoes = document.getElementById("opcoes");
 
-            // Limpa as opções anteriores
             divOpcoes.innerHTML = "";
-
-            // Pega a pergunta da vez
             const pergunta = perguntas[perguntaAtual];
             elementoPergunta.innerText = pergunta.texto;
 
-            // Cria os botões para cada opção
             pergunta.opcoes.forEach(opcao => {
                 const botao = document.createElement("button");
                 botao.innerText = opcao.texto;
@@ -143,11 +375,9 @@
         }
 
         function responder(deus) {
-            // Adiciona um ponto para o deus escolhido
-            pontos[deus]++;
+            pontos[deus] = (pontos[deus] || 0) + 1;
             perguntaAtual++;
 
-            // Verifica se ainda tem perguntas
             if (perguntaAtual < perguntas.length) {
                 mostrarPergunta();
             } else {
@@ -159,31 +389,22 @@
             document.getElementById("quiz-box").classList.add("escondido");
             document.getElementById("resultado-box").classList.remove("escondido");
 
-            // Descobre qual deus teve mais pontos
             let deusVencedor = Object.keys(pontos).reduce((a, b) => pontos[a] > pontos[b] ? a : b);
             
-            document.getElementById("resultado-deus").innerText = deusVencedor + "!";
-            
-            // Pequena descrição dependendo do resultado
-            let mensagem = "";
-            if (deusVencedor === "Poseidon") mensagem = "Bem-vindo ao Chalé 3! A água é sua aliada.";
-            if (deusVencedor === "Atena") mensagem = "Bem-vindo ao Chalé 6! A sabedoria sempre vence.";
-            if (deusVencedor === "Ares") mensagem = "Bem-vindo ao Chalé 5! Você nasceu para o combate.";
-            if (deusVencedor === "Apolo") mensagem = "Bem-vindo ao Chalé 7! A música e a cura fluem em você.";
-            
-            document.getElementById("resultado-texto").innerText = mensagem;
+            document.getElementById("resultado-deus").innerText = deusVencedor;
+            document.getElementById("resultado-texto").innerText = deusesInfo[deusVencedor] || "Você tem uma conexão única com os deuses do Acampamento Meio-Sangue!";
         }
 
         function reiniciar() {
-            // Zera tudo e começa de novo
-            pontos = { Poseidon: 0, Atena: 0, Ares: 0, Apolo: 0 };
+            zerarPontos();
             perguntaAtual = 0;
             document.getElementById("resultado-box").classList.add("escondido");
             document.getElementById("quiz-box").classList.remove("escondido");
             mostrarPergunta();
         }
 
-        // Inicia o quiz quando a página carrega
+        // Inicialização
+        zerarPontos();
         mostrarPergunta();
     </script>
 </body>
