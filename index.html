@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz: Quem é seu Parente Divino?</title>
+    
+    <!-- Todo o CSS fica aqui dentro -->
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4ece1; /* Cor de pergaminho antigo */
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+            border-top: 5px solid #e67e22; /* Laranja do Acampamento */
+        }
+
+        h1 {
+            color: #e67e22;
+        }
+
+        button {
+            background-color: #e67e22;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background-color: #d35400;
+        }
+
+        #opcoes {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .escondido {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Qual é o seu Parente Divino? 🔱🦉🏹🐗</h1>
+        
+        <div id="quiz-box">
+            <h2 id="pergunta">Carregando pergunta...</h2>
+            <div id="opcoes">
+                <!-- Os botões vão aparecer aqui via JavaScript -->
+            </div>
+        </div>
+
+        <div id="resultado-box" class="escondido">
+            <h2>Seu pai/mãe divino é:</h2>
+            <h1 id="resultado-deus"></h1>
+            <p id="resultado-texto"></p>
+            <button onclick="reiniciar()">Tentar Novamente</button>
+        </div>
+    </div>
+
+    <!-- Todo o JavaScript fica aqui dentro -->
+    <script>
+        // O placar de cada deus
+        let pontos = {
+            Poseidon: 0,
+            Atena: 0,
+            Ares: 0,
+            Apolo: 0
+        };
+
+        // As perguntas e as opções que dão pontos para cada deus
+        const perguntas = [
+            {
+                texto: "Qual é o seu lugar favorito?",
+                opcoes: [
+                    { texto: "A praia, sentindo a brisa do mar.", deus: "Poseidon" },
+                    { texto: "A biblioteca, lendo um bom livro.", deus: "Atena" },
+                    { texto: "A academia ou um campo de batalha.", deus: "Ares" },
+                    { texto: "Um palco ou ao ar livre no sol.", deus: "Apolo" }
+                ]
+            },
+            {
+                texto: "Qual seria sua arma de escolha?",
+                opcoes: [
+                    { texto: "Arco e Flecha", deus: "Apolo" },
+                    { texto: "Espada de Bronze Celestial", deus: "Ares" },
+                    { texto: "Um Tridente", deus: "Poseidon" },
+                    { texto: "Adaga e uma boa estratégia", deus: "Atena" }
+                ]
+            },
+            {
+                texto: "Como seus amigos te descrevem?",
+                opcoes: [
+                    { texto: "Inteligente e calculista", deus: "Atena" },
+                    { texto: "Artístico e animado", deus: "Apolo" },
+                    { texto: "Forte e protetor", deus: "Ares" },
+                    { texto: "Calmo, mas imprevisível", deus: "Poseidon" }
+                ]
+            }
+        ];
+
+        let perguntaAtual = 0;
+
+        function mostrarPergunta() {
+            const elementoPergunta = document.getElementById("pergunta");
+            const divOpcoes = document.getElementById("opcoes");
+
+            // Limpa as opções anteriores
+            divOpcoes.innerHTML = "";
+
+            // Pega a pergunta da vez
+            const pergunta = perguntas[perguntaAtual];
+            elementoPergunta.innerText = pergunta.texto;
+
+            // Cria os botões para cada opção
+            pergunta.opcoes.forEach(opcao => {
+                const botao = document.createElement("button");
+                botao.innerText = opcao.texto;
+                botao.onclick = () => responder(opcao.deus);
+                divOpcoes.appendChild(botao);
+            });
+        }
+
+        function responder(deus) {
+            // Adiciona um ponto para o deus escolhido
+            pontos[deus]++;
+            perguntaAtual++;
+
+            // Verifica se ainda tem perguntas
+            if (perguntaAtual < perguntas.length) {
+                mostrarPergunta();
+            } else {
+                mostrarResultado();
+            }
+        }
+
+        function mostrarResultado() {
+            document.getElementById("quiz-box").classList.add("escondido");
+            document.getElementById("resultado-box").classList.remove("escondido");
+
+            // Descobre qual deus teve mais pontos
+            let deusVencedor = Object.keys(pontos).reduce((a, b) => pontos[a] > pontos[b] ? a : b);
+            
+            document.getElementById("resultado-deus").innerText = deusVencedor + "!";
+            
+            // Pequena descrição dependendo do resultado
+            let mensagem = "";
+            if (deusVencedor === "Poseidon") mensagem = "Bem-vindo ao Chalé 3! A água é sua aliada.";
+            if (deusVencedor === "Atena") mensagem = "Bem-vindo ao Chalé 6! A sabedoria sempre vence.";
+            if (deusVencedor === "Ares") mensagem = "Bem-vindo ao Chalé 5! Você nasceu para o combate.";
+            if (deusVencedor === "Apolo") mensagem = "Bem-vindo ao Chalé 7! A música e a cura fluem em você.";
+            
+            document.getElementById("resultado-texto").innerText = mensagem;
+        }
+
+        function reiniciar() {
+            // Zera tudo e começa de novo
+            pontos = { Poseidon: 0, Atena: 0, Ares: 0, Apolo: 0 };
+            perguntaAtual = 0;
+            document.getElementById("resultado-box").classList.add("escondido");
+            document.getElementById("quiz-box").classList.remove("escondido");
+            mostrarPergunta();
+        }
+
+        // Inicia o quiz quando a página carrega
+        mostrarPergunta();
+    </script>
+</body>
+</html>
