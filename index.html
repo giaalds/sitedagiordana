@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
@@ -28,7 +28,7 @@
             border-radius: 15px;
             box-shadow: 0 8px 25px rgba(0,0,0,0.15);
             text-align: center;
-            max-width: 700px;
+            max-width: 900px;
             width: 100%;
             border-top: 8px solid #e67e22;
         }
@@ -39,49 +39,79 @@
             font-size: 1.8rem;
         }
 
-        .progresso {
-            font-size: 0.95rem;
+        .subtitulo {
             color: #7f8c8d;
+            font-size: 0.95rem;
+            margin-bottom: 15px;
+        }
+
+        .progresso {
+            font-size: 1rem;
+            color: #e67e22;
             margin-bottom: 20px;
-            font-weight: 600;
+            font-weight: 700;
+            background-color: #fdfbf7;
+            padding: 8px;
+            border-radius: 20px;
+            display: inline-block;
         }
 
         .pergunta-texto {
-            font-size: 1.25rem;
+            font-size: 1.3rem;
             font-weight: bold;
-            margin-bottom: 25px;
-            min-height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #34495e;
+            margin-bottom: 20px;
+            color: #2c3e50;
         }
 
         .opcoes-grid {
             display: grid;
-            grid-template-columns: 1fr;
-            gap: 12px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            text-align: left;
         }
 
-        button {
+        @media (max-width: 650px) {
+            .opcoes-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        button.opcao-btn {
             background-color: #fdfbf7;
             color: #2c3e50;
-            border: 2px solid #e67e22;
-            padding: 14px 18px;
+            border: 2px solid #e0d6c8;
+            padding: 12px 15px;
             border-radius: 8px;
             cursor: pointer;
-            font-size: 1rem;
-            font-weight: 600;
+            font-size: 0.95rem;
             transition: all 0.2s ease;
-            text-align: left;
-            line-height: 1.4;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            line-height: 1.3;
         }
 
-        button:hover {
+        button.opcao-btn:hover {
             background-color: #e67e22;
             color: white;
+            border-color: #d35400;
             transform: translateY(-2px);
-            box-shadow: 0 4px 10px rgba(230, 126, 34, 0.3);
+            box-shadow: 0 4px 8px rgba(230, 126, 34, 0.25);
+        }
+
+        .deus-tag {
+            font-weight: bold;
+            font-size: 0.85rem;
+            background-color: rgba(0, 0, 0, 0.06);
+            padding: 3px 6px;
+            border-radius: 4px;
+            white-space: nowrap;
+        }
+
+        button.opcao-btn:hover .deus-tag {
+            background-color: rgba(255, 255, 255, 0.25);
+            color: white;
         }
 
         .btn-reiniciar {
@@ -91,6 +121,12 @@
             margin-top: 25px;
             width: 100%;
             border: none;
+            padding: 15px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
         }
 
         .btn-reiniciar:hover {
@@ -111,26 +147,28 @@
             font-size: 1.15rem;
             line-height: 1.6;
             background-color: #fdfbf7;
-            padding: 20px;
+            padding: 25px;
             border-radius: 8px;
-            border-left: 5px solid #e67e22;
+            border-left: 6px solid #e67e22;
+            text-align: left;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>🏛️ Quiz do Acampamento Meio-Sangue 🔱</h1>
+        <p class="subtitulo">Descubra de qual dos 22 chalés você faz parte!</p>
         
         <div id="quiz-box">
-            <div class="progresso" id="progresso">Pergunta 1 de 20</div>
+            <div class="progresso" id="progresso">Pergunta 1 de 15</div>
             <div class="pergunta-texto" id="pergunta">Carregando pergunta...</div>
             <div class="opcoes-grid" id="opcoes"></div>
         </div>
 
         <div id="resultado-box" class="escondido">
-            <h2>O Oráculo de Delfos declarou! Seu chalé é:</h2>
+            <h2>O Oráculo de Delfos declarou! Seu parente divino é:</h2>
             <h1 id="resultado-deus"></h1>
-            <p id="resultado-texto"></p>
+            <div id="resultado-texto"></div>
             <button class="btn-reiniciar" onclick="reiniciar()">Refazer o Quiz</button>
         </div>
     </div>
@@ -139,209 +177,434 @@
         let pontos = {};
 
         const deusesInfo = {
-            "Zeus": "Chalé 1 (Zeus): Feito de mármore branco com grandes colunas, portas de bronze e estátuas de águias. É limpo, silencioso e imponente. Você é um líder nato, orgulhoso e no controle dos céus.",
-            "Hera": "Chalé 2 (Hera): Um chalé elegante de mármore com colunas esculpidas com pavões. Fica sempre vazio, mas você recebeu uma bênção de honra da Rainha dos Deuses pela sua nobreza e postura.",
-            "Poseidon": "Chalé 3 (Poseidon): Construído com rochas marinhas, conchas e coral. O ar cheira a mar e o interior tem uma fonte de água salgada. É o chalé de Percy Jackson!",
-            "Deméter": "Chalé 4 (Deméter): Coberto de flores, plantas trepadeiras e grama no teto. Você tem forte ligação com a natureza e o cultivo.",
-            "Ares": "Chalé 5 (Ares): Pintado de vermelho vivo, com arame farpado no teto e uma cabeça de javali empalhada na porta. É barulhento, impulsivo e focado em combate.",
-            "Atena": "Chalé 6 (Atena): Mármore cinza decorado com corujas, funcionando como laboratório e biblioteca. É o chalé de Annabeth Chase!",
-            "Apolo": "Chalé 7 (Apolo): Feito de ouro maciço que brilha sob a luz do sol. Seus moradores são arqueiros, músicos e curandeiros talentosos.",
-            "Ártemis": "Chalé 8 (Ártemis): Brilha com uma suave luz prateada à noite. Pertence às Caçadoras de Ártemis, refletindo seu espírito livre, independente e protetor.",
-            "Hefesto": "Chalé 9 (Hefesto): Feito de tijolos pretos e chaminés que soltam fumaça. Tem uma oficina subterrânea cheia de engrenagens, ferramentas e invenções.",
-            "Afrodite": "Chalé 10 (Afrodite): Teto de gesso, paredes rosa-choque e cheiro de perfumes caros. Seus moradores se destacam pelo charme, empatia e capacidade de atração.",
-            "Hermes": "Chalé 11 (Hermes): O chalé mais antigo e acolhedor. Aceita todos os viajantes, negociadores e semideuses espertos.",
-            "Dionísio": "Chalé 12 (Dionísio): Decorado com videiras e uvas frescas. Seus moradores são festeiros, descontraídos e especialistas em cultivar a alegria.",
-            "Hades": "Chalé 13 (Hades): Mármore negro e obsidianas com tochas de fogo grego verde. É o chalé de Nico di Angelo! Misterioso, focado e mestre das sombras.",
-            "Íris": "Chalé 14 (Íris): Parede multicolorida que muda de cor com a luz. Seus moradores são criativos, otimistas e cheios de vida.",
-            "Hipnos": "Chalé 15 (Hipnos): Cabana de madeira com música de ninar suave e cheiro de flores de papoula. Tranquilo, relaxado e com grande intuição.",
-            "Nêmesis": "Chalé 16 (Nêmesis): Focado em justiça, vingança e equilíbrio. Seus moradores não aceitam injustiças e sempre cobram a conta dos arrogantes.",
-            "Nike": "Chalé 17 (Nike): Dedicado à deusa da vitória. Seus filhos são extremamente competitivos, odeiam perder e buscam a vitória em tudo.",
-            "Hebe": "Chalé 18 (Hebe): Valoriza o vigor e o espírito jovem. Seus moradores espalham energia positiva e mantêm a vitalidade do acampamento.",
-            "Tique": "Chalé 19 (Tique): Parece um cassino em miniatura! Seus moradores adoram correr riscos, testar a sorte e jogar com o destino.",
-            "Hécate": "Chalé 20 (Hécate): Blocos de pedra mágica que brilham no escuro. Místicos, praticantes de feitiçaria e manipuladores da Névoa.",
-            "Belona": "Chalé 21 (Belona): Homenagem aos laços romanos. Focado em disciplina militar, união, tática de guerra e proteção mútua.",
-            "Ênio": "Chalé 22 (Ênio): Dedicado à deusa do horror e do caos na guerra. Seus moradores são caóticos, imprevisíveis e imparáveis na batalha."
+            "Zeus": "<strong>Chalé 1 (Zeus):</strong> Feito de mármore branco com grandes colunas, portas de bronze e estátuas de águias. É limpo, silencioso e imponente.",
+            "Hera": "<strong>Chalé 2 (Hera):</strong> Um chalé elegante de mármore com colunas esculpidas com pavões. Fica sempre vazio, pois a deusa não tem filhos semideuses (você recebeu uma bênção de honra da Rainha dos Deuses).",
+            "Poseidon": "<strong>Chalé 3 (Poseidon):</strong> Construído com rochas marinhas, conchas e coral. O ar cheira a mar e o interior tem uma fonte de água salgada. É o chalé de Percy Jackson.",
+            "Deméter": "<strong>Chalé 4 (Deméter):</strong> Coberto de flores, plantas trepadeiras e grama no teto. Os filhos da deusa cuidam das plantações do acampamento.",
+            "Ares": "<strong>Chalé 5 (Ares):</strong> Pintado de vermelho vivo, com arame farpado no teto e uma cabeça de javali empalhada na porta. É barulhento e agressivo.",
+            "Atena": "<strong>Chalé 6 (Atena):</strong> Uma construção de mármore cinza decorada com corujas. Por dentro, parece uma mistura de laboratório e biblioteca cheia de mapas e projetos. É o chalé de Annabeth Chase.",
+            "Apolo": "<strong>Chalé 7 (Apolo):</strong> Feito de ouro maciço que brilha intensamente sob a luz do sol. Seus moradores são arqueiros, músicos e curandeiros talentosos.",
+            "Ártemis": "<strong>Chalé 8 (Ártemis):</strong> Brilha com uma suave luz prateada à noite. Pertence às Caçadoras de Ártemis, que só o utilizam quando visitam o acampamento.",
+            "Hefesto": "<strong>Chalé 9 (Hefesto):</strong> Feito de tijolos pretos e chaminés que soltam fumaça. Tem uma oficina subterrânea cheia de engrenagens, ferramentas e fiação elétrica.",
+            "Afrodite": "<strong>Chalé 10 (Afrodite):</strong> Tem teto de gesso, paredes rosa-choque e cheira a perfumes caros. Janelas com cortinas de renda e camas cheias de travesseiros macios.",
+            "Hermes": "<strong>Chalé 11 (Hermes):</strong> O chalé mais antigo e cheio de semideuses. Aceita todos os filhos de Hermes, além de viajantes e semideuses não reclamados por seus pais.",
+            "Dionísio": "<strong>Chalé 12 (Dionísio):</strong> Decorado com videiras, uvas frescas e plantas trepadeiras. Seus moradores têm grande facilidade para fazer plantas crescerem.",
+            "Hades": "<strong>Chalé 13 (Hades):</strong> Construído com mármore negro e obsidianas, com tochas de fogo grego verde nas paredes. É o chalé de Nico di Angelo.",
+            "Íris": "<strong>Chalé 14 (Íris):</strong> Dedicado à deusa do arco-íris. Suas paredes mudam de cor conforme a luz bate, exibindo um visual multicolorido.",
+            "Hipnos": "<strong>Chalé 15 (Hipnos):</strong> O chalé do deus do sono parece uma cabana de madeira antiga. Tem música de ninar suave no ar e o cheiro forte de flores de papoula que induzem ao sono.",
+            "Nêmesis": "<strong>Chalé 16 (Nêmesis):</strong> Dedicado à deusa da vingança e do equilíbrio. Seus moradores buscam justiça e punição para os arrogantes.",
+            "Nike": "<strong>Chalé 17 (Nike):</strong> Dedicado à deusa da vitória. Seus filhos são extremamente competitivos, odeiam perder e celebram qualquer tipo de conquista.",
+            "Hebe": "<strong>Chalé 18 (Hebe):</strong> Dedicado à deusa da juventude. Os campistas deste chalé valorizam o vigor e ajudam a manter o espírito jovem do acampamento.",
+            "Tique": "<strong>Chalé 19 (Tique):</strong> Dedicado à deusa da fortuna e da sorte. Parece um cassino em miniatura, e seus moradores usam dados e moedas para testar a sorte.",
+            "Hécate": "<strong>Chalé 20 (Hécate):</strong> Construído com blocos de pedra mágica que brilham no escuro. Seus moradores praticam magia direta, feitiçaria e controlam a Névoa.",
+            "Belona": "<strong>Chalé 21 (Belona):</strong> Deusa romana da guerra. Embora os romanos fiquem no Acampamento Júpiter, este chalé foi erguido para honrar os laços de união entre os dois acampamentos.",
+            "Ênio": "<strong>Chalé 22 (Ênio):</strong> Dedicado à deusa grega do horror, do clamor e da destruição na guerra, uma divindade menor que acompanha Ares nas batalhas."
         };
 
         const perguntas = [
             {
-                texto: "1. Qual ambiente você escolheria para recarregar as energias?",
+                texto: "1. Qual seria o seu lugar ideal no Acampamento Meio-Sangue?",
                 opcoes: [
-                    { texto: "Uma praia aberta sentindo a brisa do oceano.", deus: "Poseidon" },
-                    { texto: "Uma biblioteca moderna cheia de projetos e mapas.", deus: "Atena" },
-                    { texto: "Uma oficina cheia de engrenagens e ferramentas.", deus: "Hefesto" },
-                    { texto: "Um quarto confortável com pouca luz e silêncio total.", deus: "Hipnos" }
+                    { deus: "Zeus", tag: "⚡ Zeus", texto: "O topo da colina sob o céu aberto observando tudo." },
+                    { deus: "Hera", tag: "🦚 Hera", texto: "O pavilhão principal de mármore nobre." },
+                    { deus: "Poseidon", tag: "🔱 Poseidon", texto: "A praia, ouvindo a brisa e as ondas do mar." },
+                    { deus: "Deméter", tag: "🌾 Deméter", texto: "Os campos de morango e jardins floridos." },
+                    { deus: "Ares", tag: "🐗 Ares", texto: "A arena de combate treinando com armas de bronze." },
+                    { deus: "Atena", tag: "🦉 Atena", texto: "A biblioteca e laboratório estudando mapas e táticas." },
+                    { deus: "Apolo", tag: "☀️ Apolo", texto: "A fogueira cantando e tocando música ao pôr do sol." },
+                    { deus: "Ártemis", tag: "🌙 Ártemis", texto: "O bosque fechado sob a luz prateada da lua." },
+                    { deus: "Hefesto", tag: "🔨 Hefesto", texto: "A forja e oficina cheia de ferramentas e engrenagens." },
+                    { deus: "Afrodite", tag: "🕊️ Afrodite", texto: "O chalé perfumado se arrumando para os eventos." },
+                    { deus: "Hermes", tag: "🪶 Hermes", texto: "O centro de entregas, trocas e correria do acampamento." },
+                    { deus: "Dionísio", tag: "🍇 Dionísio", texto: "A varanda da Casa Grande relaxando com suco de uva." },
+                    { deus: "Hades", tag: "💀 Hades", texto: "O subsolo silencioso e isolado do acampamento." },
+                    { deus: "Íris", tag: "🌈 Íris", texto: "O riacho onde se formam arco-íris multicoloridos." },
+                    { deus: "Hipnos", tag: "💤 Hipnos", texto: "Uma rede bem confortável sob a sombra das árvores." },
+                    { deus: "Nêmesis", tag: "⚖️ Nêmesis", texto: "A sala de justiça garantindo que o placar seja justo." },
+                    { deus: "Nike", tag: "🏆 Nike", texto: "O topo do pódio celebrando mais uma vitória em jogos." },
+                    { deus: "Hebe", tag: "🌸 Hebe", texto: "A área de jogos com muita energia e vigor jovem." },
+                    { deus: "Tique", tag: "🎲 Tique", texto: "A mesa de jogos de dados e moedas testando a sorte." },
+                    { deus: "Hécate", tag: "🔮 Hécate", texto: "A clareira mística onde a Névoa é mais densa." },
+                    { deus: "Belona", tag: "⚔️ Belona", texto: "O acampamento militar organizado em formação tática." },
+                    { deus: "Ênio", tag: "💥 Ênio", texto: "O campo de batalha no meio do caos e destruição." }
                 ]
             },
             {
-                texto: "2. Como você lida com uma disputa ou injustiça?",
+                texto: "2. Qual superpoder ou habilidade mística você mais gostaria de ter?",
                 opcoes: [
-                    { texto: "Garantindo que o culpado pague e o equilíbrio seja feito.", deus: "Nêmesis" },
-                    { texto: "Partindo direto para o confronto físico para resolver rápido.", deus: "Ares" },
-                    { texto: "Usando inteligência tática militar e disciplina.", deus: "Belona" },
-                    { texto: "Usando lábia e negociação para sair por cima.", deus: "Hermes" }
+                    { deus: "Zeus", tag: "⚡ Zeus", texto: "Controlar raios e correntes de ar do céu." },
+                    { deus: "Hera", tag: "🦚 Hera", texto: "Emitir uma aura de comando nobre que exige respeito." },
+                    { deus: "Poseidon", tag: "🔱 Poseidon", texto: "Controlar a água do mar e provocar terremotos." },
+                    { deus: "Deméter", tag: "🌾 Deméter", texto: "Fazer plantas e grãos crescerem em segundos." },
+                    { deus: "Ares", tag: "🐗 Ares", texto: "Dominar qualquer arma e invocar fúria em combate." },
+                    { deus: "Atena", tag: "🦉 Atena", texto: "Visão estratégica genial e conhecimento instantâneo." },
+                    { deus: "Apolo", tag: "☀️ Apolo", texto: "Mirar com perfeição com arco e curar ferimentos." },
+                    { deus: "Ártemis", tag: "🌙 Ártemis", texto: "Comunicação com animais selvagens e passos silenciosos." },
+                    { deus: "Hefesto", tag: "🔨 Hefesto", texto: "Controlar o fogo e construir autômatos mecânicos." },
+                    { deus: "Afrodite", tag: "🕊️ Afrodite", texto: "Charmesfala (persuasão irresistível pela voz)." },
+                    { deus: "Hermes", tag: "🪶 Hermes", texto: "Supervelocidade e capacidade de abrir qualquer fechadura." },
+                    { deus: "Dionísio", tag: "🍇 Dionísio", texto: "Manipular videiras e induzir loucura ou alegria em festas." },
+                    { deus: "Hades", tag: "💀 Hades", texto: "Viagem pelas sombras e invocar guerreiros esqueletos." },
+                    { deus: "Íris", tag: "🌈 Íris", texto: "Criar feixes multicoloridos e mensagens holográficas." },
+                    { deus: "Hipnos", tag: "💤 Hipnos", texto: "Induzir o sono profundo e controlar os sonhos alheios." },
+                    { deus: "Nêmesis", tag: "⚖️ Nêmesis", texto: "Retribuir na mesma moeda o mal que causaram aos outros." },
+                    { deus: "Nike", tag: "🏆 Nike", texto: "Garantir um impulso de sorte e vitória para a equipe." },
+                    { deus: "Hebe", tag: "🌸 Hebe", texto: "Restaurar a juventude e o vigor físico das pessoas." },
+                    { deus: "Tique", tag: "🎲 Tique", texto: "Alterar probabilidade e ter uma sorte inexplicável." },
+                    { deus: "Hécate", tag: "🔮 Hécate", texto: "Lançar feitiços reais e manipular a Névoa mística." },
+                    { deus: "Belona", tag: "⚔️ Belona", texto: "Transferir disciplina militar e tática para tropas aliadas." },
+                    { deus: "Ênio", tag: "💥 Ênio", texto: "Causar terror, pânico e destruição em massa no inimigo." }
                 ]
             },
             {
-                texto: "3. Qual destas atividades você mais gosta?",
+                texto: "3. Qual é a sua arma mística dos sonhos?",
                 opcoes: [
-                    { texto: "Tocar instrumentos, cantar ou praticar tiro com arco.", deus: "Apolo" },
-                    { texto: "Praticar feitiçaria ou estudar coisas ocultas.", deus: "Hécate" },
-                    { texto: "Jogar jogos de azar, moedas ou dados.", deus: "Tique" },
-                    { texto: "Cuidar de jardins e cultivar plantas.", deus: "Deméter" }
+                    { deus: "Zeus", tag: "⚡ Zeus", texto: "Um raio de bronze celestial eletrizante." },
+                    { deus: "Hera", tag: "🦚 Hera", texto: "Um cetro de mármore decorado com energia divina." },
+                    { deus: "Poseidon", tag: "🔱 Poseidon", texto: "Um tridente de bronze e coral marinho." },
+                    { deus: "Deméter", tag: "🌾 Deméter", texto: "Uma foice de combate enredada por vinhas." },
+                    { deus: "Ares", tag: "🐗 Ares", texto: "Uma espada pesada e lança de batalha sangrenta." },
+                    { deus: "Atena", tag: "🦉 Atena", texto: "Uma adaga precisa e escudo com símbolo da Medusa." },
+                    { deus: "Apolo", tag: "☀️ Apolo", texto: "Um arco dourado brilhante que nunca erra o alvo." },
+                    { deus: "Ártemis", tag: "🌙 Ártemis", texto: "Um arco prateado que brilha com a luz da lua." },
+                    { deus: "Hefesto", tag: "🔨 Hefesto", texto: "Um martelo de guerra mecânico com engrenagens." },
+                    { deus: "Afrodite", tag: "🕊️ Afrodite", texto: "Uma adaga elegante com lâmina espelhada." },
+                    { deus: "Hermes", tag: "🪶 Hermes", texto: "O Caduceu com serpentes aladas que ajudam." },
+                    { deus: "Dionísio", tag: "🍇 Dionísio", texto: "Um tirso envolvido por videiras com ponta afiada." },
+                    { deus: "Hades", tag: "💀 Hades", texto: "Uma espada de ferro estígio que absorve a luz." },
+                    { deus: "Íris", tag: "🌈 Íris", texto: "Um chakram circular multicolorido." },
+                    { deus: "Hipnos", tag: "💤 Hipnos", texto: "Um cetro com flor de papoula que libera névoa do sono." },
+                    { deus: "Nêmesis", tag: "⚖️ Nêmesis", texto: "Uma balança de bronze que vira chicote da justiça." },
+                    { deus: "Nike", tag: "🏆 Nike", texto: "Uma lança dourada da vitória inquebrável." },
+                    { deus: "Hebe", tag: "🌸 Hebe", texto: "Uma taça mística que restaura as energias." },
+                    { deus: "Tique", tag: "🎲 Tique", texto: "Moedas de bronze afiadas guiadas pela sorte." },
+                    { deus: "Hécate", tag: "🔮 Hécate", texto: "Um cajado de pedra mágica com runas escuras." },
+                    { deus: "Belona", tag: "⚔️ Belona", texto: "Gladius romano e escudo com insígnias de legionário." },
+                    { deus: "Ênio", tag: "💥 Ênio", texto: "Machados duplos denteados destruidores." }
                 ]
             },
             {
-                texto: "4. Qual é o seu maior objetivo numa competição?",
+                texto: "4. Como você reage ao enfrentar um grande problema ou desafio?",
                 opcoes: [
-                    { texto: "Vencer a qualquer custo, em primeiro lugar sempre!", deus: "Nike" },
-                    { texto: "Causar um caos total e assustar meus adversários.", deus: "Ênio" },
-                    { texto: "Comandar o grupo e demonstrar minha autoridade.", deus: "Zeus" },
-                    { texto: "Divertir todo mundo com uma boa festa depois do jogo.", deus: "Dionísio" }
+                    { deus: "Zeus", tag: "⚡ Zeus", texto: "Assumo a liderança e tomo a decisão final com autoridade." },
+                    { deus: "Hera", tag: "🦚 Hera", texto: "Exijo ordem, postura e união familiar/social." },
+                    { deus: "Poseidon", tag: "🔱 Poseidon", texto: "Enfrento de frente como uma onda que derruba barreiras." },
+                    { deus: "Deméter", tag: "🌾 Deméter", texto: "Tenho paciência e espero o tempo certo de cultivar soluções." },
+                    { deus: "Ares", tag: "🐗 Ares", texto: "Ataco o problema com força bruta antes que ele cresça." },
+                    { deus: "Atena", tag: "🦉 Atena", texto: "Monto um plano tático passo a passo para vencer." },
+                    { deus: "Apolo", tag: "☀️ Apolo", texto: "Uso criatividade, arte e mantenho o otimismo ensolarado." },
+                    { deus: "Ártemis", tag: "🌙 Ártemis", texto: "Agido sozinho(a) e com foco silencioso na floresta." },
+                    { deus: "Hefesto", tag: "🔨 Hefesto", texto: "Vou para a oficina e construo uma máquina/solução prática." },
+                    { deus: "Afrodite", tag: "🕊️ Afrodite", texto: "Uso diplomacia, charme e inteligência interpessoal." },
+                    { deus: "Hermes", tag: "🪶 Hermes", texto: "Improviso uma saída rápida, esperta e atalhos." },
+                    { deus: "Dionísio", tag: "🍇 Dionísio", texto: "Não me estresso, relaxo e espero a poeira baixar numa festa." },
+                    { deus: "Hades", tag: "💀 Hades", texto: "Analiso em silêncio nas sombras e ataco o ponto fraco." },
+                    { deus: "Íris", tag: "🌈 Íris", texto: "Tento enxergar os lados positivos e coloridos da vida." },
+                    { deus: "Hipnos", tag: "💤 Hipnos", texto: "Durmo sobre o assunto para a resposta surgir num sonho." },
+                    { deus: "Nêmesis", tag: "⚖️ Nêmesis", texto: "Verifico quem causou o problema e aplico a punição justa." },
+                    { deus: "Nike", tag: "🏆 Nike", texto: "Não aceito a derrota de jeito nenhum até sair vitorioso(a)." },
+                    { deus: "Hebe", tag: "🌸 Hebe", texto: "Enfrento com entusiasmo, vigor e atitude positiva." },
+                    { deus: "Tique", tag: "🎲 Tique", texto: "Faço uma aposta ousada e confio totalmente na minha sorte." },
+                    { deus: "Hécate", tag: "🔮 Hécate", texto: "Uso intuição mística e feitiços para moldar a realidade." },
+                    { deus: "Belona", tag: "⚔️ Belona", texto: "Organizo o grupo em batalhão disciplinado." },
+                    { deus: "Ênio", tag: "💥 Ênio", texto: "Causo tanta discórdia que o problema se destrói sozinho." }
                 ]
             },
             {
-                texto: "5. Qual objeto mágico você gostaria de possuir?",
+                texto: "5. Como seus amigos descrevem o seu jeito de ser?",
                 opcoes: [
-                    { texto: "Uma espada de ferro estígio que absorve a luz.", deus: "Hades" },
-                    { texto: "Um arco prateado que brilha no escuro.", deus: "Ártemis" },
-                    { texto: "Um artefato colorido capaz de mandar mensagens holográficas.", deus: "Íris" },
-                    { texto: "Uma poção capaz de manter a juventude e o vigor eterno.", deus: "Hebe" }
+                    { deus: "Zeus", tag: "⚡ Zeus", texto: "Orgulhoso(a), imponente e nascido(a) para mandar." },
+                    { deus: "Hera", tag: "🦚 Hera", texto: "Elegante, protetor(a) e com forte postura de nobreza." },
+                    { deus: "Poseidon", tag: "🔱 Poseidon", texto: "Leal aos amigos, calmo(a), mas imprevisível como o mar." },
+                    { deus: "Deméter", tag: "🌾 Deméter", texto: "Acolhedor(a), paciente e protetor(a) da natureza." },
+                    { deus: "Ares", tag: "🐗 Ares", texto: "Sem paciência, competitivo(a) e focado(a) em briga." },
+                    { deus: "Atena", tag: "🦉 Atena", texto: "Focado(a), racional, leitor(a) compulsivo(a) e muito inteligente." },
+                    { deus: "Apolo", tag: "☀️ Apolo", texto: "Talentoso(a), ensolarado(a), vaidoso(a) e artístico(a)." },
+                    { deus: "Ártemis", tag: "🌙 Ártemis", texto: "Independente, reservado(a) e protetor(a) dos fracos." },
+                    { deus: "Hefesto", tag: "🔨 Hefesto", texto: "Prático(a), focado(a), quieto(a) e mão na massa." },
+                    { deus: "Afrodite", tag: "🕊️ Afrodite", texto: "Charmoso(a), atento(a) à moda e com muita empatia." },
+                    { deus: "Hermes", tag: "🪶 Hermes", texto: "Brincalhão(ona), veloz, negociador(a) e esperto(a)." },
+                    { deus: "Dionísio", tag: "🍇 Dionísio", texto: "Festeiro(a), tranquilo(a) e focado(a) no lazer." },
+                    { deus: "Hades", tag: "💀 Hades", texto: "Misterioso(a), quieto(a), incompreendido(a) e profundo(a)." },
+                    { deus: "Íris", tag: "🌈 Íris", texto: "Alegre, expressivo(a), otimista e cheio(a) de vida." },
+                    { deus: "Hipnos", tag: "💤 Hipnos", texto: "Calmo(a), com preguiça constante e muito sonhador(a)." },
+                    { deus: "Nêmesis", tag: "⚖️ Nêmesis", texto: "Implacável com gente arrogante e defensor(a) da justiça." },
+                    { deus: "Nike", tag: "🏆 Nike", texto: "Ultra competitivo(a), focado(a) em vencer tudo." },
+                    { deus: "Hebe", tag: "🌸 Hebe", texto: "Eternamente jovem, animado(a) e cheio(a) de energia." },
+                    { deus: "Tique", tag: "🎲 Tique", texto: "Sortudo(a), arriscado(a) e fã de apostas." },
+                    { deus: "Hécate", tag: "🔮 Hécate", texto: "Místico(a), intuitivo(a) e atraído(a) por segredos ocultos." },
+                    { deus: "Belona", tag: "⚔️ Belona", texto: "Disciplinado(a), focado(a) em tática e leal ao time." },
+                    { deus: "Ênio", tag: "💥 Ênio", texto: "Caótico(a), imprevisível, intenso(a) e sem limites." }
                 ]
             },
             {
-                texto: "6. Como seus amigos descrevem sua estética/estilo?",
+                texto: "6. Qual animal mais combina com o seu espírito?",
                 opcoes: [
-                    { texto: "Elegante, impeccável e sempre perfumado(a).", deus: "Afrodite" },
-                    { texto: "Nobre, imponente e majestoso(a).", deus: "Hera" },
-                    { texto: "Roupas confortáveis, estilo moderno e prático.", deus: "Hermes" },
-                    { texto: "Estilo místico, alternativo ou em tons escuros.", deus: "Hécate" }
+                    { deus: "Zeus", tag: "⚡ Zeus", texto: "Águia soberana voando alto." },
+                    { deus: "Hera", tag: "🦚 Hera", texto: "Pavão majestoso de penas ornamentadas." },
+                    { deus: "Poseidon", tag: "🔱 Poseidon", texto: "Cavalo selvagem ou golfinho das marés." },
+                    { deus: "Deméter", tag: "🌾 Deméter", texto: "Cervo da floresta ou ave do campo." },
+                    { deus: "Ares", tag: "🐗 Ares", texto: "Javali selvagem e destemido." },
+                    { deus: "Atena", tag: "🦉 Atena", texto: "Coruja sábia e atenta." },
+                    { deus: "Apolo", tag: "☀️ Apolo", texto: "Cisne reluzente ou corvo dourado." },
+                    { deus: "Ártemis", tag: "🌙 Ártemis", texto: "Lobo cinzento da caça noturna." },
+                    { deus: "Hefesto", tag: "🔨 Hefesto", texto: "Mulo forte ou salamandra de fogo." },
+                    { deus: "Afrodite", tag: "🕊️ Afrodite", texto: "Pomba branca graciosa." },
+                    { deus: "Hermes", tag: "🪶 Hermes", texto: "Tartaruga esperta ou serpente veloz." },
+                    { deus: "Dionísio", tag: "🍇 Dionísio", texto: "Leopardo ou tigre brincalhão." },
+                    { deus: "Hades", tag: "💀 Hades", texto: "Cão de guarda das sombras." },
+                    { deus: "Íris", tag: "🌈 Íris", texto: "Arara multicolorida cheia de vida." },
+                    { deus: "Hipnos", tag: "💤 Hipnos", texto: "Preguiça ou coruja adormecida." },
+                    { deus: "Nêmesis", tag: "⚖️ Nêmesis", texto: "Gavião caçador de presas injustas." },
+                    { deus: "Nike", tag: "🏆 Nike", texto: "Falcão peregrino veloz e invencível." },
+                    { deus: "Hebe", tag: "🌸 Hebe", texto: "Borboleta em constante renovação." },
+                    { deus: "Tique", tag: "🎲 Tique", texto: "Gato preto místico e sortudo." },
+                    { deus: "Hécate", tag: "🔮 Hécate", texto: "Cão da noite ou corvo mágico." },
+                    { deus: "Belona", tag: "⚔️ Belona", texto: "Mastim de guerra militar treinado." },
+                    { deus: "Ênio", tag: "💥 Ênio", texto: "Touro enfurecido em disparada." }
                 ]
             },
             {
-                texto: "7. Em um trabalho de grupo, qual é seu papel natural?",
+                texto: "7. Qual costuma ser a sua maior fraqueza ou 'defeito fatal'?",
                 opcoes: [
-                    { texto: "O estrategista que planeja cada detalhe.", deus: "Atena" },
-                    { texto: "O líder que assume o comando e toma as decisões finais.", deus: "Zeus" },
-                    { texto: "O executor que coloca a mão na massa e constrói a ideia.", deus: "Hefesto" },
-                    { texto: "O diplomata que unifica todos os participantes.", deus: "Belona" }
+                    { deus: "Zeus", tag: "⚡ Zeus", texto: "Orgulho e necessidade constante de dominar." },
+                    { deus: "Hera", tag: "🦚 Hera", texto: "Ciúme e inflexibilidade com falhas." },
+                    { deus: "Poseidon", tag: "🔱 Poseidon", texto: "Lealdade excessiva que coloca tudo em risco." },
+                    { deus: "Deméter", tag: "🌾 Deméter", texto: "Teimosia e superproteção sufocante." },
+                    { deus: "Ares", tag: "🐗 Ares", texto: "Raiva cega e impulsividade destrutiva." },
+                    { deus: "Atena", tag: "🦉 Atena", texto: "Hibris (achar que sabe tudo melhor que os outros)." },
+                    { deus: "Apolo", tag: "☀️ Apolo", texto: "Egocentrismo e vaidade com suas habilidades." },
+                    { deus: "Ártemis", tag: "🌙 Ártemis", texto: "Dificuldade de confiar em quem vem de fora." },
+                    { deus: "Hefesto", tag: "🔨 Hefesto", texto: "Isolamento e preferir máquinas a pessoas." },
+                    { deus: "Afrodite", tag: "🕊️ Afrodite", texto: "Vaidade e focar na aparência em momentos errados." },
+                    { deus: "Hermes", tag: "🪶 Hermes", texto: "Tentação de trapacear ou pegar atalhos duvidosos." },
+                    { deus: "Dionísio", tag: "🍇 Dionísio", texto: "Fuga dos problemas buscando só diversão." },
+                    { deus: "Hades", tag: "💀 Hades", texto: "Rancor acumulado e se isolar na escuridão." },
+                    { deus: "Íris", tag: "🌈 Íris", texto: "Falta de foco por se distrair com tudo." },
+                    { deus: "Hipnos", tag: "💤 Hipnos", texto: "Apatia e preguiça de agir na hora certa." },
+                    { deus: "Nêmesis", tag: "⚖️ Nêmesis", texto: "Obsessão por vingança sem medir consequências." },
+                    { deus: "Nike", tag: "🏆 Nike", texto: "Incapaz de aceitar perder até em brincadeiras." },
+                    { deus: "Hebe", tag: "🌸 Hebe", texto: "Medo de amadurecer ou perder o entusiasmo." },
+                    { deus: "Tique", tag: "🎲 Tique", texto: "Depender demais da sorte sem ter um plano B." },
+                    { deus: "Hécate", tag: "🔮 Hécate", texto: "Curiosidade por segredos perigosos e ocultismo." },
+                    { deus: "Belona", tag: "⚔️ Belona", texto: "Rigidez militar exagerada e dificuldade de relaxar." },
+                    { deus: "Ênio", tag: "💥 Ênio", texto: "Gosto por criar discórdia e caos desnecessário." }
                 ]
             },
             {
-                texto: "8. Qual elemento natural traz mais conexão com você?",
+                texto: "8. Qual o seu estilo de vestuário preferido?",
                 opcoes: [
-                    { texto: "Tempestades, raios e o ar do céu.", deus: "Zeus" },
-                    { texto: "O mar profundo e seus tremores.", deus: "Poseidon" },
-                    { texto: "A terra fértil, flores e florestas.", deus: "Deméter" },
-                    { texto: "Sombras, minerais e o solo negro.", deus: "Hades" }
+                    { deus: "Zeus", tag: "⚡ Zeus", texto: "Traje elegante em tons branco, azul e dourado." },
+                    { deus: "Hera", tag: "🦚 Hera", texto: "Vestuário nobre, formal e impecável." },
+                    { deus: "Poseidon", tag: "🔱 Poseidon", texto: "Bermuda de praia, camisa leve e chinelos." },
+                    { deus: "Deméter", tag: "🌾 Deméter", texto: "Roupas confortáveis de algodão em tons terrosos." },
+                    { deus: "Ares", tag: "🐗 Ares", texto: "Jaqueta de couro vermelho, coturnos e jeans." },
+                    { deus: "Atena", tag: "🦉 Atena", texto: "Roupas práticas, cinzas, polo e tênis discreto." },
+                    { deus: "Apolo", tag: "☀️ Apolo", texto: "Estilo de verão, óculos escuros e brilho dourado." },
+                    { deus: "Ártemis", tag: "🌙 Ártemis", texto: "Roupas de caça prateadas, botas e capuz." },
+                    { deus: "Hefesto", tag: "🔨 Hefesto", texto: "Macacão de oficina com bolsos de ferramentas." },
+                    { deus: "Afrodite", tag: "🕊️ Afrodite", texto: "Roupas de grife na última tendência da moda." },
+                    { deus: "Hermes", tag: "🪶 Hermes", texto: "Tênis esportivo veloz, mochila e jaqueta leve." },
+                    { deus: "Dionísio", tag: "🍇 Dionísio", texto: "Camisas florais ou estampadas e bem soltas." },
+                    { deus: "Hades", tag: "💀 Hades", texto: "Roupas pretas, estilo gótico e acessórios de prata." },
+                    { deus: "Íris", tag: "🌈 Íris", texto: "Roupas multicoloridas estilo tie-dye e alegres." },
+                    { deus: "Hipnos", tag: "💤 Hipnos", texto: "Pijama macio de seda, moletom e pantufas." },
+                    { deus: "Nêmesis", tag: "⚖️ Nêmesis", texto: "Visual bem contrastado em preto e branco." },
+                    { deus: "Nike", tag: "🏆 Nike", texto: "Agasalho esportivo de marca e tênis de corrida." },
+                    { deus: "Hebe", tag: "🌸 Hebe", texto: "Camisetas jovens, coloridas e divertidas." },
+                    { deus: "Tique", tag: "🎲 Tique", texto: "Traje de cassino, colete e moedas no bolso." },
+                    { deus: "Hécate", tag: "🔮 Hécate", texto: "Casacos escuros com símbolos místico-mágicos." },
+                    { deus: "Belona", tag: "⚔️ Belona", texto: "Estilo militar camuflado com botinas resistentes." },
+                    { deus: "Ênio", tag: "💥 Ênio", texto: "Roupas rasgadas, com tachas e estampa pesada." }
                 ]
             },
             {
-                texto: "9. Se alguém te provoca, qual sua reação imediata?",
+                texto: "9. Como seria um sábado à tarde perfeito para você?",
                 opcoes: [
-                    { texto: "Parto para cima com raiva e barulho.", deus: "Ares" },
-                    { texto: "Planejo uma vingança perfeita para pagar na mesma moeda.", deus: "Nêmesis" },
-                    { texto: "Uso de ironia e deboche sem me estressar.", deus: "Dionísio" },
-                    { texto: "Apenas ignoro, minha paz e meu descanso valem mais.", deus: "Hipnos" }
+                    { deus: "Zeus", tag: "⚡ Zeus", texto: "Do topo de um prédio alto planejando grandes metas." },
+                    { deus: "Hera", tag: "🦚 Hera", texto: "Organizando uma refeição familiar perfeita." },
+                    { deus: "Poseidon", tag: "🔱 Poseidon", texto: "Nadando no mar ou praticando esportes na água." },
+                    { deus: "Deméter", tag: "🌾 Deméter", texto: "Cuidando do jardim ou num piquenique no parque." },
+                    { deus: "Ares", tag: "🐗 Ares", texto: "Assistindo lutas de combate ou jogando jogos de ação." },
+                    { deus: "Atena", tag: "🦉 Atena", texto: "Lendo um bom livro ou visitando um museu histórico." },
+                    { deus: "Apolo", tag: "☀️ Apolo", texto: "Ensaiando músicas ou aproveitando o dia de sol." },
+                    { deus: "Ártemis", tag: "🌙 Ártemis", texto: "Fazendo uma caminhada sozinho(a) na floresta." },
+                    { deus: "Hefesto", tag: "🔨 Hefesto", texto: "Montando e desmontando aparelhos mecânicos." },
+                    { deus: "Afrodite", tag: "🕊️ Afrodite", texto: "Dia de compras, salão e autocuidado no SPA." },
+                    { deus: "Hermes", tag: "🪶 Hermes", texto: "Viajando e conhecendo novos cantos da cidade." },
+                    { deus: "Dionísio", tag: "🍇 Dionísio", texto: "Numa festa animada com amigos e boa comida." },
+                    { deus: "Hades", tag: "💀 Hades", texto: "No meu quarto escuro ouvindo música no silêncio." },
+                    { deus: "Íris", tag: "🌈 Íris", texto: "Pintando quadros ou fazendo artesanato colorido." },
+                    { deus: "Hipnos", tag: "💤 Hipnos", texto: "Dormindo uma longa soneca sem hora para acordar." },
+                    { deus: "Nêmesis", tag: "⚖️ Nêmesis", texto: "Ajudando a resolver injustiças e ajustar contas." },
+                    { deus: "Nike", tag: "🏆 Nike", texto: "Participando de um torneio para ganhar a medalha." },
+                    { deus: "Hebe", tag: "🌸 Hebe", texto: "Brincando e mantendo o alto astral da galera." },
+                    { deus: "Tique", tag: "🎲 Tique", texto: "Jogando poker ou jogos de sorte com amigos." },
+                    { deus: "Hécate", tag: "🔮 Hécate", texto: "Estudando feitiços, tarot e mitologias antigas." },
+                    { deus: "Belona", tag: "⚔️ Belona", texto: "Treinando artes marciais ou jogos de estratégia." },
+                    { deus: "Ênio", tag: "💥 Ênio", texto: "Indo a um parque de diversão radical ou show pesado." }
                 ]
             },
             {
-                texto: "10. Qual destas qualidades é mais marcante em você?",
+                texto: "10. Qual elemento ou fenômeno da natureza mais te impressiona?",
                 opcoes: [
-                    { texto: "Uma sorte incrível em situações improváveis.", deus: "Tique" },
-                    { texto: "Espírito livre, independente e amante da natureza selvagem.", deus: "Ártemis" },
-                    { texto: "Sempre jovem de espírito, animado e otimista.", deus: "Hebe" },
-                    { texto: "Talento natural para artes, medicina ou música.", deus: "Apolo" }
+                    { deus: "Zeus", tag: "⚡ Zeus", texto: "Tempestade com raios e trovões estrondosos." },
+                    { deus: "Hera", tag: "🦚 Hera", texto: "A majestade de um céu limpo e cristalino." },
+                    { deus: "Poseidon", tag: "🔱 Poseidon", texto: "A força incontrolável das marés e tsunamis." },
+                    { deus: "Deméter", tag: "🌾 Deméter", texto: "A florada da primavera e o brotar da terra." },
+                    { deus: "Ares", tag: "🐗 Ares", texto: "Erupções vulcânicas e rios de lava." },
+                    { deus: "Atena", tag: "🦉 Atena", texto: "A geometria dos cristais de rocha e gelo." },
+                    { deus: "Apolo", tag: "☀️ Apolo", texto: "O brilho radiante do sol do meio-dia." },
+                    { deus: "Ártemis", tag: "🌙 Ártemis", texto: "A luz prateada da lua cheia na floresta." },
+                    { deus: "Hefesto", tag: "🔨 Hefesto", texto: "O calor do magma no centro da terra." },
+                    { deus: "Afrodite", tag: "🕊️ Afrodite", texto: "A suave brisa florida da primavera." },
+                    { deus: "Hermes", tag: "🪶 Hermes", texto: "Ventos rápidos que mudam de direção." },
+                    { deus: "Dionísio", tag: "🍇 Dionísio", texto: "O crescimento e fruto das videiras ao sol." },
+                    { deus: "Hades", tag: "💀 Hades", texto: "Minerais raros e pedras preciosas no subsolo." },
+                    { deus: "Íris", tag: "🌈 Íris", texto: "O arco-íris se formando após a tempestade." },
+                    { deus: "Hipnos", tag: "💤 Hipnos", texto: "A névoa serena que cobre os campos de manhã." },
+                    { deus: "Nêmesis", tag: "⚖️ Nêmesis", texto: "O equilíbrio perfeito entre dia e noite." },
+                    { deus: "Nike", tag: "🏆 Nike", texto: "Ventos fortes impulsionando a vitória no topo." },
+                    { deus: "Hebe", tag: "🌸 Hebe", texto: "Nascente de água fresca que renova a vida." },
+                    { deus: "Tique", tag: "🎲 Tique", texto: "Estrelas cadentes trazendo sorte imprevisível." },
+                    { deus: "Hécate", tag: "🔮 Hécate", texto: "Auroras boreais e eclipses misteriosos." },
+                    { deus: "Belona", tag: "⚔️ Belona", texto: "A força retumbante de tremores na terra." },
+                    { deus: "Ênio", tag: "💥 Ênio", texto: "Tornados e tempestades caóticas destruidoras." }
                 ]
             },
             {
-                texto: "11. Qual é a sua visão sobre guerras e confrontos?",
+                texto: "11. O que você faria se o seu grupo fosse emboscado por um monstro?",
                 opcoes: [
-                    { texto: "O momento ideal para demonstrar coragem e força bruta.", deus: "Ares" },
-                    { texto: "Deve ser conduzida com disciplina militar, trabalho em equipe e tática.", deus: "Belona" },
-                    { texto: "Guerra é destruição pura, pânico e caos total!", deus: "Ênio" },
-                    { texto: "Prefiro evitar, mas se entrar, é só para ganhar!", deus: "Nike" }
+                    { deus: "Zeus", tag: "⚡ Zeus", texto: "Tomo o comando e disparo raios na fera." },
+                    { deus: "Hera", tag: "🦚 Hera", texto: "Mantenho a postura e ordeno a proteção de todos." },
+                    { deus: "Poseidon", tag: "🔱 Poseidon", texto: "Crio uma tromba d'água para varrer o inimigo." },
+                    { deus: "Deméter", tag: "🌾 Deméter", texto: "Faço raízes presas no chão enrolarem a criatura." },
+                    { deus: "Ares", tag: "🐗 Ares", texto: "Corro direto contra ele com minha espada." },
+                    { deus: "Atena", tag: "🦉 Atena", texto: "Identifico o ponto fraco e coordeno o ataque." },
+                    { deus: "Apolo", tag: "☀️ Apolo", texto: "Disparo flechas certeiras de longe nos olhos do monstro." },
+                    { deus: "Ártemis", tag: "🌙 Ártemis", texto: "Aviso a equipe e ataco de surpresa pelas sombras." },
+                    { deus: "Hefesto", tag: "🔨 Hefesto", texto: "Ativo uma armadilha mecânica que projetei." },
+                    { deus: "Afrodite", tag: "🕊️ Afrodite", texto: "Uso Charmesfala para confundir o monstro." },
+                    { deus: "Hermes", tag: "🪶 Hermes", texto: "Uso velocidade para distrair e desorientar a fera." },
+                    { deus: "Dionísio", tag: "🍇 Dionísio", texto: "Deixo o monstro zonzo com ilusões de videiras." },
+                    { deus: "Hades", tag: "💀 Hades", texto: "Abro uma fenda no chão para tragar o inimigo." },
+                    { deus: "Íris", tag: "🌈 Íris", texto: "Cego o monstro com um feixe de luz reflexiva." },
+                    { deus: "Hipnos", tag: "💤 Hipnos", texto: "Lanço um pó do sono para fazer a fera dormir." },
+                    { deus: "Nêmesis", tag: "⚖️ Nêmesis", texto: "Refleto o próprio ataque do monstro contra ele." },
+                    { deus: "Nike", tag: "🏆 Nike", texto: "Luto com raça até garantir que sairemos vitoriosos." },
+                    { deus: "Hebe", tag: "🌸 Hebe", texto: "Restauro a energia dos meus aliados feridos." },
+                    { deus: "Tique", tag: "🎲 Tique", texto: "Confio que algo absurdamente sortudo vai nos salvar." },
+                    { deus: "Hécate", tag: "🔮 Hécate", texto: "Dobro a Névoa criando uma ilusão para ele atacar o ar." },
+                    { deus: "Belona", tag: "⚔️ Belona", texto: "Organizo o grupo em escudo e lança em formação." },
+                    { deus: "Ênio", tag: "💥 Ênio", texto: "Provoco um caos tão grande que o monstro entra em pânico." }
                 ]
             },
             {
-                texto: "12. Qual tipo de decoração você prefere no seu quarto?",
+                texto: "12. Qual tipo de leitura ou filme mais desperta o seu interesse?",
                 opcoes: [
-                    { texto: "Paredes rosas, espelhos grandes e travesseiros macios.", deus: "Afrodite" },
-                    { texto: "Luzes coloridas, arco-íris e quadros expressivos.", deus: "Íris" },
-                    { texto: "Mármore nobre, colunas decoradas e simetria perfeita.", deus: "Hera" },
-                    { texto: "Tijolos escuros, ferramentas penduradas e invenções.", deus: "Hefesto" }
+                    { deus: "Zeus", tag: "⚡ Zeus", texto: "Biografias de imperadores e grandes líderes políticos." },
+                    { deus: "Hera", tag: "🦚 Hera", texto: "Dramas sobre dinastias reais e honra familiar." },
+                    { deus: "Poseidon", tag: "🔱 Poseidon", texto: "Histórias de aventuras em altomar e exploração." },
+                    { deus: "Deméter", tag: "🌾 Deméter", texto: "Livros sobre botânica, culinária e natureza." },
+                    { deus: "Ares", tag: "🐗 Ares", texto: "Filmes de ação, artes marciais e batalhas." },
+                    { deus: "Atena", tag: "🦉 Atena", texto: "Livros de estratégia, ciência e mistérios lógicos." },
+                    { deus: "Apolo", tag: "☀️ Apolo", texto: "Poesia, manuais de música e medicina." },
+                    { deus: "Ártemis", tag: "🌙 Ártemis", texto: "Guias de sobrevivência na selva e caça." },
+                    { deus: "Hefesto", tag: "🔨 Hefesto", texto: "Revistas de mecânica, robótica e invenções." },
+                    { deus: "Afrodite", tag: "🕊️ Afrodite", texto: "Romances apaixonantes e livros de moda." },
+                    { deus: "Hermes", tag: "🪶 Hermes", texto: "Histórias de viagens pelo mundo e grandes trocas." },
+                    { deus: "Dionísio", tag: "🍇 Dionísio", texto: "Comédias divertidas e peças de teatro." },
+                    { deus: "Hades", tag: "💀 Hades", texto: "Livros góticos, mistérios sombrios e submundo." },
+                    { deus: "Íris", tag: "🌈 Íris", texto: "Quadrinhos ilustrados e arte multicolorida." },
+                    { deus: "Hipnos", tag: "💤 Hipnos", texto: "Livros sobre significado de sonhos e relaxamento." },
+                    { deus: "Nêmesis", tag: "⚖️ Nêmesis", texto: "Histórias sobre julgamentos, justiça e investigação." },
+                    { deus: "Nike", tag: "🏆 Nike", texto: "Biografias de campeões e superação esportiva." },
+                    { deus: "Hebe", tag: "🌸 Hebe", texto: "Histórias sobre aventuras juvenis e amizade." },
+                    { deus: "Tique", tag: "🎲 Tique", texto: "Livros sobre teoria dos jogos, cassinos e sorte." },
+                    { deus: "Hécate", tag: "🔮 Hécate", texto: "Grimórios de magia, ocultismo e bruxaria." },
+                    { deus: "Belona", tag: "⚔️ Belona", texto: "Documentários de táticas de guerra e disciplina." },
+                    { deus: "Ênio", tag: "💥 Ênio", texto: "Histórias de distopias, guerras e caos." }
                 ]
             },
             {
-                texto: "13. Como você reage ao fracasso?",
+                texto: "13. Qual das seguintes frases mais combina com a sua filosofia de vida?",
                 opcoes: [
-                    { texto: "Não aceito! Treino o dobro até alcançar a vitória absoluta.", deus: "Nike" },
-                    { texto: "Analiso o erro logicamente e refaço a estratégia.", deus: "Atena" },
-                    { texto: "Dou de ombros, confio que a sorte muda no próximo jogo.", deus: "Tique" },
-                    { texto: "Uso a criatividade para transformar o erro em arte.", deus: "Apolo" }
+                    { deus: "Zeus", tag: "⚡ Zeus", texto: "'O comando pertence a quem tem coragem de liderar.'" },
+                    { deus: "Hera", tag: "🦚 Hera", texto: "'A honra e a estrutura familiar são o pilar de tudo.'" },
+                    { deus: "Poseidon", tag: "🔱 Poseidon", texto: "'A lealdade aos amigos é inabalável como o oceano.'" },
+                    { deus: "Deméter", tag: "🌾 Deméter", texto: "'Quem cultiva com paciência colhe o fruto certo.'" },
+                    { deus: "Ares", tag: "🐗 Ares", texto: "'A força e a coragem na batalha mostram quem você é.'" },
+                    { deus: "Atena", tag: "🦉 Atena", texto: "'A sabedoria vence qualquer exército sem soltar uma gota de suor.'" },
+                    { deus: "Apolo", tag: "☀️ Apolo", texto: "'A luz da arte e da música cura a alma do mundo.'" },
+                    { deus: "Ártemis", tag: "🌙 Ártemis", texto: "'Livre na floresta, protegendo os meus com garra.'" },
+                    { deus: "Hefesto", tag: "🔨 Hefesto", texto: "'O trabalho duro e a criação dão forma ao futuro.'" },
+                    { deus: "Afrodite", tag: "🕊️ Afrodite", texto: "'O encanto e o amor movem o mundo mais do que a guerra.'" },
+                    { deus: "Hermes", tag: "🪶 Hermes", texto: "'A vida é rápida demais para ficar parado no mesmo lugar.'" },
+                    { deus: "Dionísio", tag: "🍇 Dionísio", texto: "'Aproveite o presente e celebre cada segundo!'" },
+                    { deus: "Hades", tag: "💀 Hades", texto: "'Nas sombras se escondem os maiores tesouros.'" },
+                    { deus: "Íris", tag: "🌈 Íris", texto: "'Sempre há esperança e cores após a chuva.'" },
+                    { deus: "Hipnos", tag: "💤 Hipnos", texto: "'O descanso da mente é a chave para a verdadeira paz.'" },
+                    { deus: "Nêmesis", tag: "⚖️ Nêmesis", texto: "'A justiça tarda, mas nunca falha com arrogantes.'" },
+                    { deus: "Nike", tag: "🏆 Nike", texto: "'O segundo lugar é apenas o primeiro dos perdedores.'" },
+                    { deus: "Hebe", tag: "🌸 Hebe", texto: "'Mantenha o espírito jovem e você nunca envelhecerá.'" },
+                    { deus: "Tique", tag: "🎲 Tique", texto: "'Quem não arrisca jamais descobre a sorte que tem.'" },
+                    { deus: "Hécate", tag: "🔮 Hécate", texto: "'O mundo é repleto de magia para quem sabe ver a Névoa.'" },
+                    { deus: "Belona", tag: "⚔️ Belona", texto: "'A vitória nasce da união, ordem e disciplina militar.'" },
+                    { deus: "Ênio", tag: "💥 Ênio", texto: "'No caos da batalha apenas os mais intensos prevalecem.'" }
                 ]
             },
             {
-                texto: "14. Qual seu lugar favorito no Acampamento?",
+                texto: "14. Qual seria o seu companheiro místico ou mascote ideal?",
                 opcoes: [
-                    { texto: "As plantações de morango e os campos.", deus: "Deméter" },
-                    { texto: "O lago de canoagem e a parede de escalada com lava.", deus: "Poseidon" },
-                    { texto: "A fogueira central cantando e fazendo piadas.", deus: "Hermes" },
-                    { texto: "O bosque fechado na penumbra.", deus: "Hades" }
+                    { deus: "Zeus", tag: "⚡ Zeus", texto: "Uma águia imperial treinada." },
+                    { deus: "Hera", tag: "🦚 Hera", texto: "Um pavão albino majestoso." },
+                    { deus: "Poseidon", tag: "🔱 Poseidon", texto: "Um hipocampo (cavalo marinho místico)." },
+                    { deus: "Deméter", tag: "🌾 Deméter", texto: "Um cervo dócil da floresta." },
+                    { deus: "Ares", tag: "🐗 Ares", texto: "Um cão de guarda feroz de combate." },
+                    { deus: "Atena", tag: "🦉 Atena", texto: "Uma coruja das neves super inteligente." },
+                    { deus: "Apolo", tag: "☀️ Apolo", texto: "Um falcão dourado veloz." },
+                    { deus: "Ártemis", tag: "🌙 Ártemis", texto: "Um lobo cinzento leal." },
+                    { deus: "Hefesto", tag: "🔨 Hefesto", texto: "Um cão robótico autômato feito por mim." },
+                    { deus: "Afrodite", tag: "🕊️ Afrodite", texto: "Um gato persa felpudo e mimado." },
+                    { deus: "Hermes", tag: "🪶 Hermes", texto: "Um esquilo espertinho ou camaleão." },
+                    { deus: "Dionísio", tag: "🍇 Dionísio", texto: "Um pequeno leopardo brincalhão." },
+                    { deus: "Hades", tag: "💀 Hades", texto: "Um cão das sombras de olhos vermelhos." },
+                    { deus: "Íris", tag: "🌈 Íris", texto: "Um papagaio com penas multicoloridas." },
+                    { deus: "Hipnos", tag: "💤 Hipnos", texto: "Um gato preguiçoso que dorme o dia todo." },
+                    { deus: "Nêmesis", tag: "⚖️ Nêmesis", texto: "Um gavião caçador de garras afiadas." },
+                    { deus: "Nike", tag: "🏆 Nike", texto: "Um cavalo de corrida campeão." },
+                    { deus: "Hebe", tag: "🌸 Hebe", texto: "Um filhote de cachorro hiperativo e brincalhão." },
+                    { deus: "Tique", tag: "🎲 Tique", texto: "Um gato preto da sorte." },
+                    { deus: "Hécate", tag: "🔮 Hécate", texto: "Um corvo falante místico." },
+                    { deus: "Belona", tag: "⚔️ Belona", texto: "Um mastim militar de legião." },
+                    { deus: "Ênio", tag: "💥 Ênio", texto: "Um javali de batalha incontrolável." }
                 ]
             },
             {
-                texto: "15. O que torna uma pessoa verdadeiramente admirável para você?",
+                texto: "15. Para finalizar: qual bebida refrescante combina com o seu dia?",
                 opcoes: [
-                    { texto: "A capacidade de manter a justiça e punir os arrogantes.", deus: "Nêmesis" },
-                    { texto: "Sua beleza, empatia e poder de atração.", deus: "Afrodite" },
-                    { texto: "Sua determinação, liderança e presença forte.", deus: "Zeus" },
-                    { texto: "Sua autonomia, coragem e independência de todos.", deus: "Ártemis" }
-                ]
-            },
-            {
-                texto: "16. Se você pudesse ter um dom mágico especial, qual escolheria?",
-                opcoes: [
-                    { texto: "Controlar a Névoa para criar ilusões e magia.", deus: "Hécate" },
-                    { texto: "Induzir o sono e controlar os sonhos das pessoas.", deus: "Hipnos" },
-                    { texto: "Manipular a água e falar com criaturas marinhas.", deus: "Poseidon" },
-                    { texto: "Criar plantas, frutas e flores instantaneamente.", deus: "Dionísio" }
-                ]
-            },
-            {
-                texto: "17. Qual superpoder secundário te atrai mais?",
-                opcoes: [
-                    { texto: "Vigor físico inagotável e vitalidade.", deus: "Hebe" },
-                    { texto: "Poder de cura rápido para ferimentos.", deus: "Apolo" },
-                    { texto: "Supervelocidade e agilidade em viagens.", deus: "Hermes" },
-                    { texto: "Visão colorida e habilidade de criar luzes refletoras.", deus: "Íris" }
-                ]
-            },
-            {
-                texto: "18. Qual das opções descreve melhor seu espírito em combate?",
-                opcoes: [
-                    { texto: "Agressivo, barulhento e focado na força.", deus: "Ares" },
-                    { texto: "Impiedoso, destruidor e aterrorizante.", deus: "Ênio" },
-                    { texto: "Organizado, leal aos aliados e estratégico.", deus: "Belona" },
-                    { texto: "Misterioso, atacando direto das sombras.", deus: "Hades" }
-                ]
-            },
-            {
-                texto: "19. Qual tipo de ambiente te deixa estressado?",
-                opcoes: [
-                    { texto: "Locais bagunçados, sem etiqueta ou desrespeitosos.", deus: "Hera" },
-                    { texto: "Lugares sem tecnologia, ferramentas ou projeto prático.", deus: "Hefesto" },
-                    { texto: "Pessoas chatas e sem senso de diversão/festa.", deus: "Dionísio" },
-                    { texto: "Locais sem competição ou sem desafio para vencer.", deus: "Nike" }
-                ]
-            },
-            {
-                texto: "20. No final das contas, como você gostaria de ser lembrado?",
-                opcoes: [
-                    { texto: "Como alguém sábio, inteligente e estrategista invencível.", deus: "Atena" },
-                    { texto: "Como alguém carismático, cheio de amigos e acolhedor.", deus: "Hermes" },
-                    { texto: "Como alguém místico que dominou segredos antigos.", deus: "Hécate" },
-                    { texto: "Como alguém extremamente leal, forte e destemido.", deus: "Poseidon" }
+                    { deus: "Zeus", tag: "⚡ Zeus", texto: "Água mineral puríssima e efervescente." },
+                    { deus: "Hera", tag: "🦚 Hera", texto: "Chá gelado nobre com limão siciliano." },
+                    { deus: "Poseidon", tag: "🔱 Poseidon", texto: "Água de coco bem gelada na praia." },
+                    { deus: "Deméter", tag: "🌾 Deméter", texto: "Suco natural de frutas frescas colhidas." },
+                    { deus: "Ares", tag: "🐗 Ares", texto: "Bebida energética ultra forte." },
+                    { deus: "Atena", tag: "🦉 Atena", texto: "Café gelado sem açúcar para foco total." },
+                    { deus: "Apolo", tag: "☀️ Apolo", texto: "Limonada bem doce com raspas de limão." },
+                    { deus: "Ártemis", tag: "🌙 Ártemis", texto: "Água pura de nascente da montanha." },
+                    { deus: "Hefesto", tag: "🔨 Hefesto", texto: "Refrigerante gelado direto da lata." },
+                    { deus: "Afrodite", tag: "🕊️ Afrodite", texto: "Smoothie de morango com chantilly." },
+                    { deus: "Hermes", tag: "🪶 Hermes", texto: "Isotônico esportivo rápido." },
+                    { deus: "Dionísio", tag: "🍇 Dionísio", texto: "Suco de uva integral artesanal gelado." },
+                    { deus: "Hades", tag: "💀 Hades", texto: "Suco de romã bem encorpado e escuro." },
+                    { deus: "Íris", tag: "🌈 Íris", texto: "Suco em camadas coloridas de frutas." },
+                    { deus: "Hipnos", tag: "💤 Hipnos", texto: "Chá de camomila e papoula gelado." },
+                    { deus: "Nêmesis", tag: "⚖️ Nêmesis", texto: "Limonada suíça levemente amarga." },
+                    { deus: "Nike", tag: "🏆 Nike", texto: "Bebida proteica de alta performance." },
+                    { deus: "Hebe", tag: "🌸 Hebe", texto: "Néctar efervescente e doce de frutas." },
+                    { deus: "Tique", tag: "🎲 Tique", texto: "Drink de frutas com mistura surpresa." },
+                    { deus: "Hécate", tag: "🔮 Hécate", texto: "Elixir de ervas aromáticas medicinais." },
+                    { deus: "Belona", tag: "⚔️ Belona", texto: "Bebida tática fortificada com minerais." },
+                    { deus: "Ênio", tag: "💥 Ênio", texto: "Mistura efervescente picante para dar choque!" }
                 ]
             }
         ];
@@ -368,10 +631,13 @@
 
             pergunta.opcoes.forEach(opcao => {
                 const botao = document.createElement("button");
-                botao.innerText = opcao.texto;
+                botao.className = "opcao-btn";
+                botao.innerHTML = `<span class="deus-tag">${opcao.tag}</span> <span>${opcao.texto}</span>`;
                 botao.onclick = () => responder(opcao.deus);
                 divOpcoes.appendChild(botao);
             });
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         function responder(deus) {
@@ -391,8 +657,10 @@
 
             let deusVencedor = Object.keys(pontos).reduce((a, b) => pontos[a] > pontos[b] ? a : b);
             
-            document.getElementById("resultado-deus").innerText = deusVencedor;
-            document.getElementById("resultado-texto").innerText = deusesInfo[deusVencedor] || "Você tem uma conexão única com os deuses do Acampamento Meio-Sangue!";
+            document.getElementById("resultado-deus").innerText = deusVencedor + "!";
+            document.getElementById("resultado-texto").innerHTML = deusesInfo[deusVencedor] || "Você tem uma conexão única com os deuses!";
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         function reiniciar() {
